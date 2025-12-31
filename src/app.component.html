@@ -1,0 +1,275 @@
+
+<div class="min-h-screen font-sans text-slate-800 selection:bg-indigo-100 selection:text-indigo-800 overflow-hidden flex flex-col">
+  
+  <!-- HEADER -->
+  <header class="glass-panel border-b border-white/40 sticky top-0 z-40 shadow-[0_4px_30px_rgba(0,0,0,0.03)] shrink-0">
+    <div class="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center space-x-5">
+        <div class="bg-gradient-to-br from-indigo-600 to-violet-700 p-2.5 rounded-xl shadow-lg shadow-indigo-600/20 ring-1 ring-white/20">
+          <app-ui-icon name="users" class="text-white" [size]="20" />
+        </div>
+        <div class="flex flex-col">
+          <h1 class="text-xl font-bold text-slate-900 tracking-tight hidden sm:block">
+            Organigrama Corporativo
+          </h1>
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <p class="text-[10px] text-slate-500 font-bold tracking-widest uppercase hidden sm:block">Operaciones en tiempo real</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT ACTIONS & SEARCH -->
+      <div class="flex items-center space-x-4">
+        
+        <!-- Action Buttons -->
+        <div class="hidden md:flex items-center gap-2 mr-2 border-r border-slate-200/60 pr-4">
+          <button 
+            (click)="downloadTemplate()"
+            class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-indigo-600 hover:border-indigo-200 transition-all shadow-sm"
+            title="Descargar Plantilla CSV"
+          >
+            <app-ui-icon name="download" [size]="14" />
+            <span>Plantilla</span>
+          </button>
+          
+          <button 
+            (click)="triggerFileInput()"
+            class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-white bg-slate-900 border border-slate-900 rounded-lg hover:bg-slate-800 shadow-lg hover:shadow-xl transition-all"
+          >
+            <app-ui-icon name="upload" [size]="14" />
+            <span>Cargar CSV</span>
+          </button>
+          <input type="file" id="csvUploadInput" accept=".csv" class="hidden" (change)="onFileSelected($event)" />
+        </div>
+
+        <!-- SEARCH BAR -->
+        <div class="relative group">
+          <app-ui-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" [size]="18" />
+          <input 
+            type="text"
+            placeholder="Buscar colaborador..."
+            [value]="searchTerm()"
+            (input)="updateSearch($event)"
+            [disabled]="isLoading()"
+            class="pl-10 pr-4 py-2.5 bg-white/50 border border-slate-200 rounded-full text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 w-48 sm:w-72 transition-all outline-none placeholder:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
+          />
+          
+          <!-- SEARCH RESULTS -->
+          @if (searchTerm() && filteredEmployees().length > 0) {
+            <div class="absolute top-full right-0 mt-3 w-80 bg-white rounded-xl shadow-2xl border border-slate-100 max-h-96 overflow-y-auto z-50 py-2">
+              @for (emp of filteredEmployees(); track emp.id) {
+                <div 
+                  (click)="selectEmployee(emp); updateSearchToEmpty()"
+                  class="px-4 py-3 hover:bg-indigo-50 cursor-pointer border-b border-slate-50 last:border-0 flex items-center gap-3 transition-colors"
+                >
+                    <div [class]="'w-8 h-8 rounded-full flex items-center justify-center text-xs text-white ' + getRoleColor(emp.roleKey)">
+                      <app-ui-icon [name]="getRoleIcon(emp.roleKey)" [size]="14" />
+                    </div>
+                    <div>
+                      <p class="text-sm font-bold text-slate-800">{{ emp.name }}</p>
+                      <p class="text-xs text-slate-500">{{ emp.role }}</p>
+                    </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SUCCESS TOAST -->
+  @if (uploadSuccess()) {
+    <div class="fixed top-24 right-8 z-50 bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-xl animate-fadeIn flex items-center gap-3">
+       <app-ui-icon name="fileSpreadsheet" [size]="20" />
+       <div>
+         <p class="text-sm font-bold">Carga Exitosa</p>
+         <p class="text-xs text-emerald-100">La plantilla se ha procesado correctamente.</p>
+       </div>
+    </div>
+  }
+
+  <!-- MAIN SCROLLABLE CONTENT -->
+  <main class="flex-grow overflow-x-auto overflow-y-auto custom-scrollbar">
+    <div class="min-w-max p-8 lg:p-12 pb-24 mx-auto flex flex-col items-center">
+    
+      @if (isLoading()) {
+        <!-- ORG CHART SKELETON LOADER -->
+        <div class="flex flex-col items-center animate-pulse w-full pt-12 pb-24">
+           
+           <!-- Loading Overlay Pill -->
+           <div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 backdrop-blur text-white px-5 py-3 rounded-full flex items-center gap-3 shadow-2xl border border-white/10 animate-fadeIn">
+              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <span class="text-xs font-bold tracking-widest uppercase">Cargando Estructura...</span>
+           </div>
+  
+           <!-- Manager Skeleton -->
+           <div class="relative z-10 mb-12">
+              <div class="w-80 h-32 bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                 <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-slate-200 rounded-xl"></div>
+                    <div class="flex-1 space-y-2">
+                       <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+                       <div class="h-3 bg-slate-100 rounded w-1/2"></div>
+                    </div>
+                 </div>
+                 <div class="mt-4 h-1.5 bg-slate-100 rounded-full w-full"></div>
+              </div>
+              <!-- Vertical Line Down -->
+              <div class="absolute top-full left-1/2 -translate-x-1/2 h-12 w-px bg-slate-300"></div>
+           </div>
+  
+           <!-- Teams Skeleton Row -->
+           <div class="flex items-start justify-center gap-12 pt-8 w-full overflow-hidden">
+              @for (i of [1,2,3,4]; track i; let first = $first; let last = $last) {
+                 <div class="relative flex flex-col items-center">
+                    <!-- Connectors -->
+                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 h-8 w-px bg-slate-300"></div>
+                    @if (!first) { <div class="absolute -top-8 left-0 w-1/2 h-px bg-slate-300"></div> }
+                    @if (!last) { <div class="absolute -top-8 right-0 w-1/2 h-px bg-slate-300"></div> }
+                    
+                    <!-- Column -->
+                    <div class="w-72 flex flex-col gap-4">
+                       <!-- Header -->
+                       <div class="h-32 bg-slate-100 rounded-xl border border-slate-200 p-4">
+                          <div class="h-5 bg-slate-200 rounded w-1/2 mx-auto mb-4"></div>
+                          <div class="space-y-2">
+                             <div class="h-8 bg-white/60 rounded-lg w-full border border-slate-200/50"></div>
+                             <div class="h-8 bg-white/60 rounded-lg w-full border border-slate-200/50"></div>
+                          </div>
+                       </div>
+                       <!-- List -->
+                       <div class="space-y-3 relative">
+                          <!-- Guide Line -->
+                          <div class="absolute left-4 top-0 bottom-0 w-px bg-slate-200 border-l border-dashed border-slate-300 ml-[18px] -z-10 h-full"></div>
+                          
+                          @for (j of [1,2,3,4,5,6]; track j) {
+                             <div class="flex items-center gap-3 p-2 bg-white rounded-lg border border-slate-100">
+                                <div class="w-10 h-10 rounded-full bg-slate-200 shrink-0"></div>
+                                <div class="flex-1 space-y-1">
+                                   <div class="h-3 bg-slate-200 rounded w-20"></div>
+                                   <div class="h-2 bg-slate-100 rounded w-12"></div>
+                                </div>
+                             </div>
+                          }
+                       </div>
+                    </div>
+                 </div>
+              }
+           </div>
+        </div>
+      } @else {
+        <!-- ORG CHART DATA -->
+        @if (data(); as appData) {
+          
+          <!-- ORG CHART TREE -->
+          <div class="flex flex-col items-center animate-fadeIn">
+            
+            <!-- LEVEL 1: MANAGER (ROOT) -->
+            <div class="relative z-10 mb-12">
+               <div class="w-80 transform transition-transform hover:-translate-y-1 duration-300">
+                 <app-employee-avatar [employee]="appData.manager" variant="card" (click)="selectEmployee(appData.manager)" />
+               </div>
+               <!-- Vertical Line Down (Softer Color) -->
+               <div class="absolute top-full left-1/2 -translate-x-1/2 h-12 w-px bg-indigo-200/60"></div>
+            </div>
+
+            <!-- LEVEL 2: TEAMS ROW -->
+            <!-- The horizontal bridge line is created by the top borders of the children pseudo elements -->
+            <div class="flex items-start justify-center gap-12 pt-8">
+              
+              @for (block of appData.blocks; track block.id; let first = $first; let last = $last) {
+                <div class="relative flex flex-col items-center">
+                  
+                  <!-- Connectors -->
+                  <!-- Vertical Line Up to Parent (Softer) -->
+                  <div class="absolute -top-8 left-1/2 -translate-x-1/2 h-8 w-px bg-indigo-200/60"></div>
+                  <!-- Horizontal Arms (Softer) -->
+                  <!-- Left Arm (Hidden for first child) -->
+                  @if (!first) { <div class="absolute -top-8 left-0 w-1/2 h-px bg-indigo-200/60"></div> }
+                  <!-- Right Arm (Hidden for last child) -->
+                  @if (!last) { <div class="absolute -top-8 right-0 w-1/2 h-px bg-indigo-200/60"></div> }
+
+                  <!-- LEVEL 3: TEAM COLUMN -->
+                  <div class="w-72 flex flex-col gap-4">
+                    
+                    <!-- Team Header / Coordinator (Top of Column) -->
+                    <div [class]="'rounded-2xl border shadow-sm p-5 text-center relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] bg-white ' + block.styles.borderColor">
+                      <!-- Background accent -->
+                      <div [class]="'absolute inset-0 opacity-30 ' + block.styles.headerBg"></div>
+                      
+                      <div class="relative z-10">
+                        <h3 [class]="'font-black text-lg mb-4 uppercase tracking-tight ' + block.styles.titleColor">{{ block.name }}</h3>
+                        
+                        <!-- Coordinators List -->
+                        <div class="flex flex-col gap-2">
+                          @for (coord of block.staff.coordinators; track coord.id) {
+                            <app-employee-avatar [employee]="coord" variant="row" (click)="selectEmployee(coord)" />
+                          }
+                        </div>
+                      </div>
+
+                      <!-- Decorative Background Number -->
+                      <div class="absolute -right-4 -bottom-8 text-[90px] font-black opacity-[0.03] pointer-events-none select-none">
+                        {{ block.id }}
+                      </div>
+                    </div>
+
+                    <!-- Connection to Staff -->
+                    <div class="h-4 w-px bg-slate-200 mx-auto"></div>
+
+                    <!-- Staff List (Operators, Aux, etc) -->
+                    <div class="flex flex-col gap-3 relative">
+                      <!-- Vertical Guide Line -->
+                      <div class="absolute left-4 top-0 bottom-0 w-px bg-slate-200 border-l border-dashed border-slate-300 ml-[18px] -z-10 h-full"></div>
+
+                      <!-- Operators -->
+                      @for (op of block.staff.operators; track op.id) {
+                        <div class="relative pl-0"> 
+                           <app-employee-avatar [employee]="op" variant="row" (click)="selectEmployee(op)" />
+                        </div>
+                      }
+                      
+                      <!-- Lashers -->
+                      @for (lasher of block.staff.lashers; track lasher.id) {
+                         <div class="relative pl-0">
+                           <app-employee-avatar [employee]="lasher" variant="row" (click)="selectEmployee(lasher)" />
+                        </div>
+                      }
+                       <!-- Aux -->
+                      @for (aux of block.staff.auxiliaries; track aux.id) {
+                         <div class="relative pl-0">
+                           <app-employee-avatar [employee]="aux" variant="row" (click)="selectEmployee(aux)" />
+                        </div>
+                      }
+                    </div>
+
+                  </div>
+
+                </div>
+              }
+            </div>
+
+          </div>
+        }
+      }
+
+      <!-- PERFORMANCE TABLE SECTION -->
+      <!-- Always rendered, handles its own loading state via [isLoading] -->
+      <div class="w-full max-w-7xl mt-24">
+          <app-team-performance 
+            [blocks]="data()?.blocks ?? []" 
+            [isLoading]="isLoading()" 
+          />
+      </div>
+
+    </div>
+  </main>
+
+  <!-- DETAIL MODAL -->
+  @if (selectedEmployee()) {
+    <app-employee-modal [employee]="selectedEmployee()!" (onClose)="closeModal()" />
+  }
+
+</div>
