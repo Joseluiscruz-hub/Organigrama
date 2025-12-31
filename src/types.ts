@@ -22,20 +22,39 @@ export interface Employee {
   phone: string;
 }
 
+// Objetivos corporativos
+export interface TeamObjectives {
+  pdf: number;           // 100%
+  tiempoEstancia: string; // "00:55"
+  tiempoPlanta: string;   // "00:55"
+  tarimas: number;        // 1579
+  seguridad: number;      // 5
+}
+
 export interface TeamMetrics {
-  // New specific metrics
-  efficiency: number;     // % (0-100)
-  adherence: number;      // % (0-100)
-  safetyScore: number;    // % (0-100)
-  unitsProcessed: number; // Count
+  // Métricas principales (basadas en la imagen corporativa)
+  pdf: number;              // Porcentaje de eficiencia (ej: 105.51%)
+  pdfScore: number;         // Score normalizado (ej: 1.06)
+  tiempoEstancia: string;   // Tiempo estancia (ej: "00:54")
+  tiempoPlanta: string;     // Tiempo de planta (ej: "00:49")
+  tarimas: number;          // Tarimas promedio (ej: 1530)
+  tarimasScore: number;     // Score normalizado
+  seguridad: number;        // Score seguridad (0-5)
+  tarjetasStop: number;     // Cantidad de incidentes
   
-  // Legacy/Computed for internal logic if needed
-  ranking: number;
-  criticalEvent?: string; 
+  // Cálculos
+  suma: number;             // Suma total de scores
+  ranking: number;          // Posición 1-4
   
-  // Visual flags
-  isEfficiencyGood: boolean;
-  isAdherenceGood: boolean;
+  // Estados visuales
+  isPdfAboveTarget: boolean;
+  isTiempoEstanciaGood: boolean;
+  isTiempoPlantaGood: boolean;
+  isTarimasAboveTarget: boolean;
+  
+  // Evento crítico
+  criticalEvent?: string;
+  hasCriticalEvent: boolean;
 }
 
 export interface Block {
@@ -47,11 +66,14 @@ export interface Block {
     borderColor: string;
     titleColor: string;
     badge: string;
-    progressBar: string; // New: specific color for progress bars
-    teamIcon: string; // Distinctive icon
+    progressBar: string;
+    teamIcon: string;
+    accentColor: string;
+    gradientFrom: string;
+    gradientTo: string;
   };
   stats: { total: number };
-  metrics: TeamMetrics; // Updated metrics
+  metrics: TeamMetrics;
   staff: {
     coordinators: Employee[];
     operators: Employee[];
@@ -63,4 +85,7 @@ export interface Block {
 export interface AppData {
   manager: Employee;
   blocks: Block[];
+  objectives: TeamObjectives;
+  reportMonth: string;
+  reportYear: number;
 }

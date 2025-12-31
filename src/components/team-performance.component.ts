@@ -1,6 +1,6 @@
 import { Component, input, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Block } from '../types';
+import { Block, TeamObjectives } from '../types';
 import { UiIconComponent } from './ui-icon.component';
 
 @Component({
@@ -8,189 +8,187 @@ import { UiIconComponent } from './ui-icon.component';
   standalone: true,
   imports: [CommonModule, UiIconComponent],
   template: `
-    <section class="mt-16 pb-12 transition-opacity duration-500" [class.opacity-100]="true">
+    <section class="mt-8 lg:mt-16 pb-12 transition-opacity duration-500">
       
       @if (isLoading()) {
         <!-- SKELETON LOADING STATE -->
         <div class="animate-pulse space-y-8">
-          
-          <!-- Header Skeleton -->
           <div class="flex justify-between items-center">
              <div class="space-y-2">
-               <div class="h-8 bg-slate-200 rounded-lg w-64"></div>
-               <div class="h-4 bg-slate-100 rounded w-48"></div>
-             </div>
-             <div class="flex gap-3">
-               <div class="h-8 w-32 bg-slate-100 rounded-lg"></div>
-               <div class="h-8 w-32 bg-slate-100 rounded-lg"></div>
+               <div class="h-8 bg-slate-200 dark:bg-slate-700 rounded-lg w-64"></div>
+               <div class="h-4 bg-slate-100 dark:bg-slate-800 rounded w-48"></div>
              </div>
           </div>
-
-          <!-- Cards Grid Skeleton -->
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
              @for (i of [1,2,3,4]; track i) {
-               <div class="bg-white rounded-2xl border border-slate-200 h-[340px] p-6 space-y-6">
-                 <!-- Card Header -->
-                 <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-                    <div class="flex items-center gap-2">
-                      <div class="w-8 h-8 rounded-lg bg-slate-200"></div>
-                      <div class="h-4 w-24 bg-slate-200 rounded"></div>
-                    </div>
-                    <div class="w-16 h-6 rounded-full bg-slate-100"></div>
-                 </div>
-                 <!-- Metrics -->
-                 <div class="space-y-4">
-                   <div class="space-y-2">
-                     <div class="flex justify-between">
-                       <div class="h-3 w-16 bg-slate-200 rounded"></div>
-                       <div class="h-3 w-10 bg-slate-200 rounded"></div>
-                     </div>
-                     <div class="h-2.5 w-full bg-slate-100 rounded-full"></div>
-                   </div>
-                   <div class="space-y-2">
-                     <div class="flex justify-between">
-                       <div class="h-3 w-16 bg-slate-200 rounded"></div>
-                       <div class="h-3 w-10 bg-slate-200 rounded"></div>
-                     </div>
-                     <div class="h-2.5 w-full bg-slate-100 rounded-full"></div>
-                   </div>
-                 </div>
-                 <!-- Footer Stats -->
-                 <div class="grid grid-cols-2 gap-4 pt-2">
-                    <div class="h-20 bg-slate-50 rounded-xl"></div>
-                    <div class="h-20 bg-slate-50 rounded-xl"></div>
-                 </div>
-               </div>
+               <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 h-[420px] p-6"></div>
              }
           </div>
-
-          <!-- Table Header Skeleton -->
-          <div class="flex items-center gap-2 mb-4">
-            <div class="w-5 h-5 bg-slate-200 rounded"></div>
-            <div class="h-6 w-48 bg-slate-200 rounded"></div>
-          </div>
-
-          <!-- Table Skeleton -->
-          <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
-             <div class="h-12 bg-slate-100 border-b border-slate-200"></div>
-             <div class="divide-y divide-slate-100">
-               @for (row of [1,2,3,4]; track row) {
-                 <div class="h-16 flex items-center px-6 gap-4">
-                    <div class="w-1/4 h-8 bg-slate-50 rounded"></div>
-                    <div class="flex-1 h-6 bg-slate-50 rounded mx-2"></div>
-                    <div class="flex-1 h-6 bg-slate-50 rounded mx-2"></div>
-                    <div class="flex-1 h-6 bg-slate-50 rounded mx-2"></div>
-                    <div class="flex-1 h-6 bg-slate-50 rounded mx-2"></div>
-                 </div>
-               }
-             </div>
-          </div>
-
         </div>
 
       } @else {
         <!-- ACTUAL CONTENT -->
         <div class="animate-fadeIn">
-          <!-- Section Header -->
-          <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          
+          <!-- Section Header - Corporate Style -->
+          <div class="mb-8 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
             <div>
-              <h2 class="text-3xl font-bold text-slate-900 uppercase tracking-tight">Tablero de Rendimiento</h2>
-              <p class="text-sm text-slate-500 mt-1">Métricas clave y estado operativo por tripulación</p>
-            </div>
-            <div class="flex gap-3">
-              <div class="bg-white/80 backdrop-blur px-4 py-2 rounded-lg border border-slate-200 shadow-sm flex items-center gap-2">
-                <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-100"></div>
-                <span class="text-xs font-bold text-slate-600 uppercase">Meta Cumplida</span>
+              <div class="flex items-center gap-3 mb-2">
+                <div class="bg-gradient-to-br from-red-600 to-red-700 p-2 rounded-lg shadow-lg">
+                  <app-ui-icon name="barChart" [size]="20" class="text-white" />
+                </div>
+                <span class="text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-widest">Resultados Operaciones</span>
               </div>
-              <div class="bg-white/80 backdrop-blur px-4 py-2 rounded-lg border border-slate-200 shadow-sm flex items-center gap-2">
-                <div class="w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-amber-100"></div>
-                <span class="text-xs font-bold text-slate-600 uppercase">Atención</span>
+              <h2 class="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                Tripulaciones {{ reportMonth() }} {{ reportYear() }}
+              </h2>
+            </div>
+            
+            <!-- Objectives Legend -->
+            <div class="flex flex-wrap gap-2">
+              <div class="bg-white dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                <span class="text-[10px] text-slate-400 uppercase">Objetivo PDF</span>
+                <p class="text-sm font-bold text-slate-800 dark:text-white">{{ objectives()?.pdf }}%</p>
+              </div>
+              <div class="bg-white dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                <span class="text-[10px] text-slate-400 uppercase">T. Estancia</span>
+                <p class="text-sm font-bold text-slate-800 dark:text-white">{{ objectives()?.tiempoEstancia }}</p>
+              </div>
+              <div class="bg-white dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                <span class="text-[10px] text-slate-400 uppercase">T. Planta</span>
+                <p class="text-sm font-bold text-slate-800 dark:text-white">{{ objectives()?.tiempoPlanta }}</p>
+              </div>
+              <div class="bg-white dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                <span class="text-[10px] text-slate-400 uppercase">Tarimas</span>
+                <p class="text-sm font-bold text-slate-800 dark:text-white">{{ objectives()?.tarimas | number }}</p>
               </div>
             </div>
           </div>
 
-          <!-- VISUAL DASHBOARD CARDS -->
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-16">
+          <!-- TEAM PERFORMANCE CARDS - Corporate Design -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
             @for (block of blocks(); track block.id) {
-              <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-white/40 overflow-hidden hover:shadow-[0_10px_30px_-4px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300 group ring-1 ring-slate-900/5">
+              <div class="group bg-white dark:bg-slate-800 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 overflow-hidden hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.15)] hover:-translate-y-1 transition-all duration-300">
                 
-                <!-- Card Header -->
-                <div [class]="'px-6 py-5 border-b flex justify-between items-center relative overflow-hidden ' + block.styles.headerBg + ' ' + block.styles.borderColor">
-                   <!-- Subtle pattern overlay for header -->
-                   <div class="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiMwMDAiLz48L3N2Zz4=')]"></div>
-                   
-                  <div class="flex items-center gap-3 relative z-10">
-                    <div [class]="'p-2 rounded-xl bg-white/70 shadow-sm ring-1 ring-black/5 ' + block.styles.titleColor">
-                      <app-ui-icon [name]="block.styles.teamIcon" [size]="18" />
+                <!-- Card Header with Gradient -->
+                <div [class]="'relative px-5 py-4 bg-gradient-to-r ' + block.styles.gradientFrom + ' ' + block.styles.gradientTo">
+                  <!-- Ranking Badge -->
+                  <div class="absolute -right-2 -top-2 w-14 h-14">
+                    <div [class]="'absolute inset-0 flex items-center justify-center ' + getRankingBgClass(block.metrics.ranking)">
+                      <span class="text-white font-black text-xl">#{{ block.metrics.ranking }}</span>
                     </div>
-                    <span [class]="'font-black tracking-wide text-sm ' + block.styles.titleColor">{{ block.name }}</span>
                   </div>
-                  <div [class]="'relative z-10 text-[10px] font-extrabold px-3 py-1.5 rounded-full bg-white/90 backdrop-blur shadow-sm border border-white/50 ' + block.styles.titleColor">
-                    #{{block.metrics.ranking}}
+                  
+                  <div class="flex items-center gap-3">
+                    <div class="bg-white/20 backdrop-blur p-2 rounded-lg">
+                      <app-ui-icon [name]="block.styles.teamIcon" [size]="22" class="text-white" />
+                    </div>
+                    <div>
+                      <h3 class="font-black text-white text-lg tracking-wide">{{ block.name }}</h3>
+                      <div class="flex items-center gap-1 mt-0.5">
+                        @for (i of getStars(); track i) {
+                          <app-ui-icon name="star" [size]="12" [class]="i <= getFilledStars(block.metrics.pdfScore) ? 'text-yellow-300' : 'text-white/30'" />
+                        }
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <!-- Card Body -->
-                <div class="p-6 space-y-7">
+                <div class="p-5 space-y-4">
                   
-                  <!-- Efficiency Meter -->
-                  <div>
-                    <div class="flex justify-between items-end mb-2">
-                      <div class="flex items-center gap-1.5 text-slate-400">
-                        <app-ui-icon name="zap" [size]="14" />
-                        <span class="text-[10px] font-bold uppercase tracking-widest">Eficiencia</span>
+                  <!-- PDF Metric - Main KPI -->
+                  <div class="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-4 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-slate-100 dark:from-slate-600 to-transparent rounded-bl-full opacity-50"></div>
+                    <div class="relative">
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">*PDF</span>
+                        <span [class]="'text-xs font-bold px-2 py-0.5 rounded-full ' + (block.metrics.isPdfAboveTarget ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400')">
+                          {{ block.metrics.isPdfAboveTarget ? '✓ Meta' : '✗ Bajo' }}
+                        </span>
                       </div>
-                      <span [class]="'text-lg font-mono font-bold ' + (block.metrics.isEfficiencyGood ? 'text-emerald-600' : 'text-amber-600')">
-                        {{ block.metrics.efficiency }}%
-                      </span>
-                    </div>
-                    <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner ring-1 ring-slate-900/5">
-                      <div class="h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden"
-                          [style.width.%]="showProgress() ? block.metrics.efficiency : 0"
-                          [class]="block.metrics.isEfficiencyGood ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.4)]' : 'bg-gradient-to-r from-amber-500 to-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.4)]'">
-                          <div class="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_2s_infinite]"></div>
+                      <div class="flex items-end gap-2">
+                        <span class="text-4xl font-black text-slate-900 dark:text-white">{{ block.metrics.pdf }}</span>
+                        <span class="text-lg text-slate-400 mb-1">%</span>
                       </div>
-                    </div>
-                  </div>
-
-                  <!-- Adherence Meter -->
-                  <div>
-                    <div class="flex justify-between items-end mb-2">
-                      <div class="flex items-center gap-1.5 text-slate-400">
-                        <app-ui-icon name="activity" [size]="14" />
-                        <span class="text-[10px] font-bold uppercase tracking-widest">Adherencia</span>
-                      </div>
-                      <span class="text-lg font-mono font-bold text-slate-700">
-                        {{ block.metrics.adherence }}%
-                      </span>
-                    </div>
-                    <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner ring-1 ring-slate-900/5">
-                      <div class="h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden"
-                          [style.width.%]="showProgress() ? block.metrics.adherence : 0"
-                          [class]="block.styles.progressBar + ' shadow-sm'">
-                          <div class="absolute inset-0 bg-white/10 w-full h-full animate-[shimmer_2s_infinite]"></div>
+                      <div class="mt-2 h-2 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                        <div 
+                          class="h-full rounded-full transition-all duration-1000"
+                          [class]="block.metrics.isPdfAboveTarget ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' : 'bg-gradient-to-r from-red-500 to-red-400'"
+                          [style.width.%]="showProgress() ? getProgressWidth(block.metrics.pdf) : 0"
+                        ></div>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Bottom Stats Grid -->
-                  <div class="grid grid-cols-2 gap-4 pt-1">
-                    <!-- Safety -->
-                    <div class="bg-slate-50/80 rounded-xl p-3 ring-1 ring-slate-200/60 flex flex-col items-center justify-center group-hover:bg-slate-50 transition-colors">
-                      <div class="mb-1 text-slate-400">
-                        <app-ui-icon name="shield" [size]="18" />
+                  <!-- Time Metrics Grid -->
+                  <div class="grid grid-cols-2 gap-3">
+                    <!-- Tiempo Estancia -->
+                    <div class="bg-white dark:bg-slate-700 rounded-lg p-3 border border-slate-100 dark:border-slate-600 shadow-sm">
+                      <div class="flex items-center gap-1.5 mb-1">
+                        <app-ui-icon name="clock" [size]="12" class="text-slate-400" />
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Estancia</span>
                       </div>
-                      <span class="text-xl font-bold text-slate-800">{{ block.metrics.safetyScore }}</span>
-                      <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Seguridad</span>
+                      <div class="flex items-center gap-1">
+                        <span class="text-xl font-bold text-slate-900 dark:text-white font-mono">{{ block.metrics.tiempoEstancia }}</span>
+                        @if (block.metrics.isTiempoEstanciaGood) {
+                          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        } @else {
+                          <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                        }
+                      </div>
                     </div>
-
-                    <!-- Units -->
-                    <div class="bg-slate-50/80 rounded-xl p-3 ring-1 ring-slate-200/60 flex flex-col items-center justify-center group-hover:bg-slate-50 transition-colors">
-                      <div class="mb-1 text-slate-400">
-                        <app-ui-icon name="package" [size]="18" />
+                    
+                    <!-- Tiempo Planta -->
+                    <div class="bg-white dark:bg-slate-700 rounded-lg p-3 border border-slate-100 dark:border-slate-600 shadow-sm">
+                      <div class="flex items-center gap-1.5 mb-1">
+                        <app-ui-icon name="timer" [size]="12" class="text-slate-400" />
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Planta</span>
                       </div>
-                      <span class="text-xl font-bold text-slate-800">{{ block.metrics.unitsProcessed | number }}</span>
-                      <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Unidades</span>
+                      <div class="flex items-center gap-1">
+                        <span class="text-xl font-bold text-slate-900 dark:text-white font-mono">{{ block.metrics.tiempoPlanta }}</span>
+                        @if (block.metrics.isTiempoPlantaGood) {
+                          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        } @else {
+                          <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Tarimas & Seguridad -->
+                  <div class="grid grid-cols-2 gap-3">
+                    <!-- Tarimas -->
+                    <div class="text-center p-3 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 border border-slate-200/50 dark:border-slate-600">
+                      <app-ui-icon name="package" [size]="18" class="text-slate-400 mx-auto mb-1" />
+                      <p class="text-xl font-black text-slate-900 dark:text-white">{{ block.metrics.tarimas | number }}</p>
+                      <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Tarimas Prom.</p>
+                    </div>
+                    
+                    <!-- Seguridad -->
+                    <div class="text-center p-3 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 border border-slate-200/50 dark:border-slate-600">
+                      <app-ui-icon name="shield" [size]="18" class="text-emerald-500 mx-auto mb-1" />
+                      <p class="text-xl font-black text-slate-900 dark:text-white">{{ block.metrics.seguridad }}/5</p>
+                      <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Seguridad</p>
+                    </div>
+                  </div>
+
+                  <!-- Tarjetas Stop -->
+                  <div [class]="'flex items-center justify-between p-3 rounded-lg border ' + (block.metrics.tarjetasStop > 0 ? 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800' : 'bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-800')">
+                    <div class="flex items-center gap-2">
+                      <app-ui-icon name="alertTriangle" [size]="16" [class]="block.metrics.tarjetasStop > 0 ? 'text-red-500' : 'text-emerald-500'" />
+                      <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Tarjetas Stop</span>
+                    </div>
+                    <span [class]="'text-lg font-black ' + (block.metrics.tarjetasStop > 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400')">
+                      {{ block.metrics.tarjetasStop }}
+                    </span>
+                  </div>
+
+                  <!-- Suma Score -->
+                  <div class="pt-3 border-t border-slate-100 dark:border-slate-700">
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Suma Total</span>
+                      <span class="text-2xl font-black text-slate-900 dark:text-white">{{ block.metrics.suma.toFixed(2) }}</span>
                     </div>
                   </div>
 
@@ -199,134 +197,165 @@ import { UiIconComponent } from './ui-icon.component';
             }
           </div>
 
-          <!-- DETAILED TABLE HEADER -->
-          <div class="mb-6 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-               <div class="bg-white p-2 rounded-lg shadow-sm border border-slate-100">
-                 <app-ui-icon name="barChart" [size]="20" class="text-slate-700" />
-               </div>
-               <div>
-                 <h3 class="text-lg font-bold text-slate-900 uppercase tracking-tight">Detalle Consolidado</h3>
-                 <p class="text-xs text-slate-500">Desglose de KPIs por célula operativa</p>
-               </div>
-            </div>
-          </div>
-
-          <!-- Main Report Table (Modern Floating Rows) -->
-          <div class="overflow-x-auto pb-4">
-            <table class="w-full text-sm border-separate border-spacing-y-3">
-              <!-- Table Header -->
-              <thead>
-                <tr class="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                  <th class="px-6 pb-2 text-left w-1/4">Tripulación</th>
-                  <th class="px-6 pb-2 text-center">Eficiencia</th>
-                  <th class="px-6 pb-2 text-center">Adherencia</th>
-                  <th class="px-6 pb-2 text-center">Seguridad</th>
-                  <th class="px-6 pb-2 text-center">Unidades</th>
-                  <th class="px-6 pb-2 text-center">Ranking</th>
-                </tr>
-              </thead>
-              <!-- Table Body -->
-              <tbody>
-                @for (block of blocks(); track block.id) {
-                  <tr class="bg-white shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] rounded-2xl transition-all duration-300 hover:transform hover:scale-[1.01] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] group">
-                    <!-- Team Name -->
-                    <td class="px-6 py-5 rounded-l-2xl border-l border-t border-b border-slate-100">
-                      <div class="flex items-center gap-4">
-                        <div [class]="'w-10 h-10 rounded-xl flex items-center justify-center ' + block.styles.headerBg + ' ' + block.styles.titleColor">
-                          <app-ui-icon [name]="block.styles.teamIcon" [size]="18" />
-                        </div>
-                        <div>
-                          <div class="font-bold text-slate-800 uppercase tracking-tight">{{ block.name }}</div>
-                          <div class="text-[10px] text-slate-400">ID: #{{ block.id }}</div>
-                        </div>
-                      </div>
-                    </td>
-                    
-                    <!-- Efficiency -->
-                    <td class="px-6 py-5 text-center border-t border-b border-slate-100">
-                      <div [class]="'inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border font-mono font-bold ' + (block.metrics.isEfficiencyGood ? 'bg-emerald-50/50 border-emerald-100 text-emerald-700' : 'bg-amber-50/50 border-amber-100 text-amber-700')">
-                        {{ block.metrics.efficiency }}%
-                      </div>
-                    </td>
-                    
-                    <!-- Adherence -->
-                    <td class="px-6 py-5 text-center border-t border-b border-slate-100">
-                       <div class="relative w-24 h-2 bg-slate-100 rounded-full mx-auto overflow-hidden">
-                          <div [class]="'absolute top-0 left-0 h-full rounded-full ' + block.styles.progressBar" [style.width.%]="block.metrics.adherence"></div>
-                       </div>
-                       <div class="mt-1.5 font-mono font-bold text-slate-600 text-xs">{{ block.metrics.adherence }}%</div>
-                    </td>
-
-                    <!-- Safety Score -->
-                    <td class="px-6 py-5 text-center border-t border-b border-slate-100">
-                      <div class="flex items-center justify-center gap-1.5">
-                         <app-ui-icon name="shield" [size]="14" class="text-slate-400" />
-                         <span class="font-bold text-slate-700">{{ block.metrics.safetyScore }}</span>
-                      </div>
-                    </td>
-
-                    <!-- Units Processed -->
-                    <td class="px-6 py-5 text-center border-t border-b border-slate-100">
-                      <span class="font-bold text-slate-800 text-base tracking-tight">{{ block.metrics.unitsProcessed | number }}</span>
-                    </td>
-
-                    <!-- Ranking -->
-                    <td class="px-6 py-5 text-center rounded-r-2xl border-r border-t border-b border-slate-100">
-                      <div class="flex items-center justify-center gap-1.5">
-                        <app-ui-icon name="flag" [size]="16" [class]="getRankingColor(block.metrics.ranking) + ' fill-current'" />
-                        <span class="font-black text-lg text-slate-800">{{ block.metrics.ranking }}</span>
-                      </div>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Critical Events Log -->
-          <div class="mt-10 border border-slate-200/60 bg-white/80 backdrop-blur shadow-sm rounded-xl overflow-hidden">
-            <div class="bg-slate-50 px-5 py-3 flex items-center justify-between border-b border-slate-200">
-              <span class="font-bold text-xs uppercase tracking-wider flex items-center gap-2 text-slate-600">
-                <app-ui-icon name="alertTriangle" [size]="14" class="text-red-500" />
-                Bitácora de Eventos Críticos
-              </span>
-              <span class="text-[10px] text-slate-400 font-mono font-medium px-2 py-0.5 bg-slate-200 rounded">EN VIVO</span>
+          <!-- CONSOLIDATED TABLE - Corporate Style -->
+          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden mb-8">
+            <!-- Table Header -->
+            <div class="bg-gradient-to-r from-red-600 to-red-700 px-6 py-4">
+              <div class="flex items-center gap-3">
+                <app-ui-icon name="barChart" [size]="20" class="text-white" />
+                <h3 class="text-lg font-bold text-white uppercase tracking-wide">Detalle Consolidado por Tripulación</h3>
+              </div>
             </div>
             
-            <div class="divide-y divide-slate-100">
-              @for (block of blocks(); track block.id) {
-                @if (block.metrics.criticalEvent) {
-                  <div class="flex flex-col md:flex-row p-0 hover:bg-slate-50 transition-colors">
-                    <div class="w-full md:w-48 bg-red-50/30 p-4 flex items-center gap-3 border-b md:border-b-0 md:border-r border-red-100/50">
-                        <div [class]="'w-2 h-2 rounded-full ' + block.styles.progressBar"></div>
-                        <span class="font-bold text-slate-800 text-sm">{{ block.name }}</span>
-                    </div>
-                    <div class="p-4 flex-1 text-sm text-slate-600 flex items-center">
-                      <span class="font-bold text-red-600 mr-3 uppercase text-[9px] border border-red-200 bg-red-50 px-2 py-0.5 rounded-md tracking-wider">Incidencia</span>
-                      {{ block.metrics.criticalEvent }}
-                    </div>
-                  </div>
-                }
-              }
+            <!-- Table Content -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-600">
+                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Tripulación</th>
+                    <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">*PDF</th>
+                    <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">T. Estancia</th>
+                    <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">*T. Planta</th>
+                    <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Tarimas</th>
+                    <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Seguridad</th>
+                    <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">T. Stop</th>
+                    <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-600">Suma</th>
+                    <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-600">Ranking</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                  @for (block of blocks(); track block.id) {
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                      <!-- Team Name -->
+                      <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                          <div [class]="'w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ' + block.styles.gradientFrom + ' ' + block.styles.gradientTo">
+                            <app-ui-icon [name]="block.styles.teamIcon" [size]="18" class="text-white" />
+                          </div>
+                          <span class="font-bold text-slate-800 dark:text-white uppercase">{{ block.name }}</span>
+                        </div>
+                      </td>
+                      
+                      <!-- PDF -->
+                      <td class="px-4 py-4 text-center">
+                        <span [class]="'font-bold ' + (block.metrics.isPdfAboveTarget ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400')">
+                          {{ block.metrics.pdf }}%
+                        </span>
+                      </td>
+                      
+                      <!-- Tiempo Estancia -->
+                      <td class="px-4 py-4 text-center">
+                        <span [class]="'px-2 py-1 rounded font-mono font-bold ' + (block.metrics.isTiempoEstanciaGood ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400')">
+                          {{ block.metrics.tiempoEstancia }}
+                        </span>
+                      </td>
+                      
+                      <!-- Tiempo Planta -->
+                      <td class="px-4 py-4 text-center">
+                        <span [class]="'px-2 py-1 rounded font-mono font-bold ' + (block.metrics.isTiempoPlantaGood ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400')">
+                          {{ block.metrics.tiempoPlanta }}
+                        </span>
+                      </td>
+                      
+                      <!-- Tarimas -->
+                      <td class="px-4 py-4 text-center">
+                        <span [class]="'font-bold ' + (block.metrics.isTarimasAboveTarget ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-300')">
+                          {{ block.metrics.tarimas | number }}
+                        </span>
+                      </td>
+                      
+                      <!-- Seguridad -->
+                      <td class="px-4 py-4 text-center">
+                        <div class="flex items-center justify-center gap-1">
+                          @for (i of [1,2,3,4,5]; track i) {
+                            <div [class]="'w-2 h-2 rounded-full ' + (i <= block.metrics.seguridad ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-600')"></div>
+                          }
+                        </div>
+                      </td>
+                      
+                      <!-- Tarjetas Stop -->
+                      <td class="px-4 py-4 text-center">
+                        <span [class]="'inline-flex items-center justify-center w-8 h-8 rounded-full font-bold ' + (block.metrics.tarjetasStop > 0 ? 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400')">
+                          {{ block.metrics.tarjetasStop }}
+                        </span>
+                      </td>
+                      
+                      <!-- Suma -->
+                      <td class="px-4 py-4 text-center bg-slate-50 dark:bg-slate-700/30">
+                        <span class="text-lg font-black text-slate-900 dark:text-white">{{ block.metrics.suma.toFixed(2) }}</span>
+                      </td>
+                      
+                      <!-- Ranking -->
+                      <td class="px-4 py-4 text-center bg-slate-50 dark:bg-slate-700/30">
+                        <div class="flex items-center justify-center gap-2">
+                          <div [class]="'w-3 h-6 rounded-sm ' + getRankingFlagClass(block.metrics.ranking)"></div>
+                          <span class="text-xl font-black text-slate-900 dark:text-white">{{ block.metrics.ranking }}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
             </div>
           </div>
+
+          <!-- CRITICAL EVENTS LOG -->
+          @if (hasCriticalEvents()) {
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-red-200 dark:border-red-800 overflow-hidden">
+              <div class="bg-gradient-to-r from-red-600 to-red-700 px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="bg-white/20 p-2 rounded-lg">
+                    <app-ui-icon name="alertTriangle" [size]="20" class="text-white" />
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-bold text-white uppercase tracking-wide">Tarjetas Stop Críticas</h3>
+                    <p class="text-xs text-red-100">Descripción del Evento</p>
+                  </div>
+                </div>
+                <span class="text-xs font-bold text-white bg-white/20 px-3 py-1 rounded-full uppercase tracking-wider">En Vivo</span>
+              </div>
+              
+              <div class="divide-y divide-red-100 dark:divide-red-900/50">
+                @for (block of blocks(); track block.id) {
+                  @if (block.metrics.hasCriticalEvent) {
+                    <div class="flex flex-col md:flex-row hover:bg-red-50/50 dark:hover:bg-red-900/10 transition-colors">
+                      <div class="w-full md:w-48 bg-red-50 dark:bg-red-900/20 p-5 flex items-center gap-3 border-b md:border-b-0 md:border-r border-red-100 dark:border-red-900/50">
+                        <div [class]="'w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ' + block.styles.gradientFrom + ' ' + block.styles.gradientTo">
+                          <app-ui-icon [name]="block.styles.teamIcon" [size]="18" class="text-white" />
+                        </div>
+                        <span class="font-bold text-slate-800 dark:text-white uppercase">{{ block.name }}</span>
+                      </div>
+                      <div class="p-5 flex-1 flex items-center gap-4">
+                        <span class="shrink-0 text-[10px] font-bold text-red-600 dark:text-red-400 uppercase border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded tracking-wider">
+                          Incidencia
+                        </span>
+                        <p class="text-sm text-slate-700 dark:text-slate-300">{{ block.metrics.criticalEvent }}</p>
+                      </div>
+                    </div>
+                  }
+                }
+              </div>
+            </div>
+          }
+
         </div>
       }
 
     </section>
   `,
-  styles: [`
+  styles: [\`
     @keyframes shimmer {
       100% { transform: translateX(100%); }
     }
-  `]
+  \`]
 })
 export class TeamPerformanceComponent {
   blocks = input<Block[]>([]);
+  objectives = input<TeamObjectives | undefined>();
+  reportMonth = input('');
+  reportYear = input(0);
   isLoading = input(false);
   
-  // Animation state to trigger transitions
   showProgress = signal(false);
 
   constructor() {
@@ -334,17 +363,44 @@ export class TeamPerformanceComponent {
       const loading = this.isLoading();
       if (!loading) {
         this.showProgress.set(false);
-        setTimeout(() => {
-          this.showProgress.set(true);
-        }, 300);
+        setTimeout(() => this.showProgress.set(true), 300);
       }
     });
   }
 
-  getRankingColor(rank: number): string {
-     if (rank === 1) return 'text-emerald-500';
-     if (rank === 2) return 'text-blue-500';
-     if (rank === 3) return 'text-amber-500';
-     return 'text-slate-300';
+  getStars(): number[] {
+    return [1, 2, 3];
+  }
+
+  getFilledStars(score: number): number {
+    if (score >= 1.05) return 3;
+    if (score >= 1.0) return 2;
+    return 1;
+  }
+  
+  getProgressWidth(pdf: number): number {
+    return Math.min(pdf, 120) / 1.2;
+  }
+
+  getRankingBgClass(rank: number): string {
+    switch(rank) {
+      case 1: return 'bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-bl-2xl';
+      case 2: return 'bg-gradient-to-br from-blue-500 to-blue-600 rounded-bl-2xl';
+      case 3: return 'bg-gradient-to-br from-amber-500 to-amber-600 rounded-bl-2xl';
+      default: return 'bg-gradient-to-br from-red-500 to-red-600 rounded-bl-2xl';
+    }
+  }
+
+  getRankingFlagClass(rank: number): string {
+    switch(rank) {
+      case 1: return 'bg-emerald-500';
+      case 2: return 'bg-blue-500';
+      case 3: return 'bg-amber-500';
+      default: return 'bg-red-500';
+    }
+  }
+
+  hasCriticalEvents(): boolean {
+    return this.blocks().some(b => b.metrics.hasCriticalEvent);
   }
 }

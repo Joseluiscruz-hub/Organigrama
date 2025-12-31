@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AppData, Block, Employee, RoleConfig, RoleKey } from '../types';
+import { AppData, Block, Employee, RoleConfig, RoleKey, TeamMetrics, TeamObjectives } from '../types';
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
@@ -12,45 +12,112 @@ export class DataService {
     AMARRADOR: { title: 'Amarrador', color: 'bg-orange-500', textColor: 'text-orange-500', iconName: 'anchor', level: 3 },
   };
 
-  // Team configurations
+  // Objetivos corporativos
+  readonly OBJECTIVES: TeamObjectives = {
+    pdf: 100,
+    tiempoEstancia: '00:55',
+    tiempoPlanta: '00:55',
+    tarimas: 1579,
+    seguridad: 5
+  };
+
+  // Team configurations with enhanced styling
   private readonly TEAMS = [
     { 
-      name: 'GLADIADORES', // Azul (Blue)
+      name: 'GLADIADORES',
       headerBg: 'bg-blue-50', 
       borderColor: 'border-blue-200', 
       titleColor: 'text-blue-700',
       badge: 'bg-blue-100 text-blue-700',
       progressBar: 'bg-gradient-to-r from-blue-600 to-blue-400',
-      teamIcon: 'swords'
+      teamIcon: 'swords',
+      accentColor: 'blue',
+      gradientFrom: 'from-blue-500',
+      gradientTo: 'to-blue-600',
+      // Datos reales basados en la imagen
+      metrics: {
+        pdf: 105.51,
+        tiempoEstancia: '00:54',
+        tiempoPlanta: '00:49',
+        tarimas: 1530,
+        seguridad: 5,
+        tarjetasStop: 0
+      }
     },
     { 
-      name: 'ARMAGEDON', // Amarillo (Yellow)
-      headerBg: 'bg-yellow-50', 
-      borderColor: 'border-yellow-200', 
-      titleColor: 'text-yellow-700',
-      badge: 'bg-yellow-100 text-yellow-700',
-      progressBar: 'bg-gradient-to-r from-yellow-500 to-yellow-400',
-      teamIcon: 'flame'
+      name: 'ARMAGEDON',
+      headerBg: 'bg-amber-50', 
+      borderColor: 'border-amber-200', 
+      titleColor: 'text-amber-700',
+      badge: 'bg-amber-100 text-amber-700',
+      progressBar: 'bg-gradient-to-r from-amber-500 to-amber-400',
+      teamIcon: 'flame',
+      accentColor: 'amber',
+      gradientFrom: 'from-amber-500',
+      gradientTo: 'to-orange-600',
+      metrics: {
+        pdf: 103.34,
+        tiempoEstancia: '00:52',
+        tiempoPlanta: '00:46',
+        tarimas: 1467,
+        seguridad: 5,
+        tarjetasStop: 0
+      }
     },
     { 
-      name: 'CRACKS', // Rosa (Pink)
-      headerBg: 'bg-pink-50', 
-      borderColor: 'border-pink-200', 
-      titleColor: 'text-pink-700',
-      badge: 'bg-pink-100 text-pink-700',
-      progressBar: 'bg-gradient-to-r from-pink-500 to-pink-400',
-      teamIcon: 'trophy'
+      name: 'CRACKS',
+      headerBg: 'bg-rose-50', 
+      borderColor: 'border-rose-200', 
+      titleColor: 'text-rose-700',
+      badge: 'bg-rose-100 text-rose-700',
+      progressBar: 'bg-gradient-to-r from-rose-500 to-rose-400',
+      teamIcon: 'trophy',
+      accentColor: 'rose',
+      gradientFrom: 'from-rose-500',
+      gradientTo: 'to-pink-600',
+      metrics: {
+        pdf: 99.28,
+        tiempoEstancia: '01:02',
+        tiempoPlanta: '00:56',
+        tarimas: 1473,
+        seguridad: 5,
+        tarjetasStop: 0
+      }
     },
     { 
-      name: 'X-MEN', // Verde (Green)
-      headerBg: 'bg-green-50', 
-      borderColor: 'border-green-200', 
-      titleColor: 'text-green-700',
-      badge: 'bg-green-100 text-green-700',
-      progressBar: 'bg-gradient-to-r from-green-600 to-green-400',
-      teamIcon: 'crosshair'
+      name: 'X-MEN',
+      headerBg: 'bg-emerald-50', 
+      borderColor: 'border-emerald-200', 
+      titleColor: 'text-emerald-700',
+      badge: 'bg-emerald-100 text-emerald-700',
+      progressBar: 'bg-gradient-to-r from-emerald-600 to-emerald-400',
+      teamIcon: 'crosshair',
+      accentColor: 'emerald',
+      gradientFrom: 'from-emerald-500',
+      gradientTo: 'to-teal-600',
+      metrics: {
+        pdf: 107.72,
+        tiempoEstancia: '00:55',
+        tiempoPlanta: '00:52',
+        tarimas: 1579,
+        seguridad: 5,
+        tarjetasStop: 1,
+        criticalEvent: 'OMC cruza el bloqueo de seguridad en los andenes cuando se ingresó unidad T1'
+      }
     }
   ];
+
+  private timeToMinutes(time: string): number {
+    const [min, sec] = time.split(':').map(Number);
+    return min + sec / 60;
+  }
+
+  private calculateScore(value: number, target: number, higherIsBetter: boolean = true): number {
+    if (higherIsBetter) {
+      return parseFloat((value / target).toFixed(2));
+    }
+    return parseFloat((target / value).toFixed(2));
+  }
 
   generateData(): AppData {
     let idCounter = 1;
@@ -77,26 +144,65 @@ export class DataService {
       };
     };
 
-    // Generate blocks based on the TEAMS configuration
-    this.TEAMS.forEach((team, index) => {
+    // Calcular métricas y rankings
+    const teamsWithScores = this.TEAMS.map((team, index) => {
+      const m = team.metrics;
+      const pdfScore = this.calculateScore(m.pdf, this.OBJECTIVES.pdf);
+      const tiempoEstanciaScore = this.calculateScore(
+        this.timeToMinutes(this.OBJECTIVES.tiempoEstancia),
+        this.timeToMinutes(m.tiempoEstancia)
+      );
+      const tiempoPlantaScore = this.calculateScore(
+        this.timeToMinutes(this.OBJECTIVES.tiempoPlanta),
+        this.timeToMinutes(m.tiempoPlanta)
+      );
+      const tarimasScore = this.calculateScore(m.tarimas, this.OBJECTIVES.tarimas);
+      
+      // Suma no considera PDF según la imagen
+      const suma = parseFloat((tiempoEstanciaScore + tiempoPlantaScore + tarimasScore + m.seguridad).toFixed(2));
+      
+      return {
+        ...team,
+        index,
+        pdfScore,
+        tarimasScore,
+        suma
+      };
+    });
+
+    // Ordenar por suma para ranking
+    const sortedForRanking = [...teamsWithScores].sort((a, b) => b.suma - a.suma);
+    const rankings = new Map<number, number>();
+    sortedForRanking.forEach((team, idx) => rankings.set(team.index, idx + 1));
+
+    // Generate blocks
+    teamsWithScores.forEach((team, index) => {
       const blockId = index + 1;
+      const m = team.metrics;
       
       const coords = Array(2).fill(null).map(() => createEmployee('COORD', blockId));
       const montas = Array(16).fill(null).map(() => createEmployee('MONTACARGUISTA', blockId));
       const aux = Array(1).fill(null).map(() => createEmployee('AUXILIAR', blockId));
       const amarradores = Array(4).fill(null).map(() => createEmployee('AMARRADOR', blockId));
 
-      // New Metrics Generation
-      const efficiency = parseFloat((Math.random() * (99.9 - 92.0) + 92.0).toFixed(1));
-      const adherence = parseFloat((Math.random() * (100.0 - 94.0) + 94.0).toFixed(1));
-      const safetyScore = parseFloat((Math.random() * (100 - 95) + 95).toFixed(1)); // High safety standards
-      const unitsProcessed = Math.floor(Math.random() * (2400 - 1800) + 1800);
-      
-      const ranking = index === 0 ? 1 : (index === 1 ? 4 : (index === 2 ? 2 : 3)); 
-      
-      const criticalEvent = team.name === 'X-MEN' 
-        ? 'Retraso en inicio de operación por bloqueo en andenes (Unidad T1)' 
-        : undefined;
+      const metrics: TeamMetrics = {
+        pdf: m.pdf,
+        pdfScore: team.pdfScore,
+        tiempoEstancia: m.tiempoEstancia,
+        tiempoPlanta: m.tiempoPlanta,
+        tarimas: m.tarimas,
+        tarimasScore: team.tarimasScore,
+        seguridad: m.seguridad,
+        tarjetasStop: m.tarjetasStop,
+        suma: team.suma,
+        ranking: rankings.get(index) || 4,
+        isPdfAboveTarget: m.pdf >= this.OBJECTIVES.pdf,
+        isTiempoEstanciaGood: this.timeToMinutes(m.tiempoEstancia) <= this.timeToMinutes(this.OBJECTIVES.tiempoEstancia),
+        isTiempoPlantaGood: this.timeToMinutes(m.tiempoPlanta) <= this.timeToMinutes(this.OBJECTIVES.tiempoPlanta),
+        isTarimasAboveTarget: m.tarimas >= this.OBJECTIVES.tarimas,
+        criticalEvent: (m as any).criticalEvent,
+        hasCriticalEvent: !!(m as any).criticalEvent
+      };
 
       blocks.push({
         id: blockId,
@@ -107,19 +213,13 @@ export class DataService {
           titleColor: team.titleColor,
           badge: team.badge,
           progressBar: team.progressBar,
-          teamIcon: team.teamIcon
+          teamIcon: team.teamIcon,
+          accentColor: team.accentColor,
+          gradientFrom: team.gradientFrom,
+          gradientTo: team.gradientTo
         },
         stats: { total: 2 + 16 + 1 + 4 },
-        metrics: {
-          efficiency,
-          adherence,
-          safetyScore,
-          unitsProcessed,
-          ranking,
-          criticalEvent,
-          isEfficiencyGood: efficiency >= 96,
-          isAdherenceGood: adherence >= 97,
-        },
+        metrics,
         staff: {
           coordinators: coords,
           operators: montas,
@@ -131,7 +231,10 @@ export class DataService {
 
     return {
       manager: createEmployee('GERENTE', 0),
-      blocks
+      blocks,
+      objectives: this.OBJECTIVES,
+      reportMonth: 'Noviembre',
+      reportYear: 2025
     };
   }
 

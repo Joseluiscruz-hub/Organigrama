@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Corporate Ops Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body { 
@@ -13,6 +18,12 @@
       /* Modern subtle dot pattern background */
       background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
       background-size: 32px 32px;
+      transition: background-color 0.3s, background-image 0.3s;
+    }
+    
+    html.dark body {
+      background-color: #0f172a;
+      background-image: radial-gradient(#334155 1px, transparent 1px);
     }
     
     /* Ambient light effect */
@@ -27,6 +38,12 @@
                   radial-gradient(circle at 100% 0%, rgba(14, 165, 233, 0.08) 0%, transparent 50%);
       pointer-events: none;
       z-index: -1;
+      transition: background 0.3s;
+    }
+    
+    html.dark body::before {
+      background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 100% 0%, rgba(14, 165, 233, 0.12) 0%, transparent 50%);
     }
 
     .glass-panel {
@@ -40,6 +57,9 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    html.dark ::-webkit-scrollbar-thumb { background: #475569; }
+    html.dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
@@ -47,6 +67,79 @@
     }
     .animate-fadeIn {
       animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    
+    /* Counter animation */
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Staggered animations */
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .animate-slideInLeft { animation: slideInLeft 0.5s ease-out forwards; }
+    .animate-slideInRight { animation: slideInRight 0.5s ease-out forwards; }
+    .animate-scaleIn { animation: scaleIn 0.4s ease-out forwards; }
+    
+    /* Pulse glow effect */
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+      50% { box-shadow: 0 0 20px 10px rgba(99, 102, 241, 0); }
+    }
+    .animate-pulseGlow { animation: pulseGlow 2s infinite; }
+    
+    /* Print styles */
+    @media print {
+      body {
+        background: white !important;
+        background-image: none !important;
+      }
+      
+      body::before {
+        display: none !important;
+      }
+      
+      header, 
+      button,
+      .no-print,
+      [class*="hover:"],
+      .animate-pulse {
+        display: none !important;
+      }
+      
+      .dark {
+        background: white !important;
+        color: black !important;
+      }
+      
+      .dark * {
+        background-color: transparent !important;
+        color: black !important;
+        border-color: #e2e8f0 !important;
+      }
+      
+      main {
+        overflow: visible !important;
+      }
+      
+      .glass-panel {
+        background: white !important;
+        backdrop-filter: none !important;
+      }
     }
   </style>
 <script type="importmap">
