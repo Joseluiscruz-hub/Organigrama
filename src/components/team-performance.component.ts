@@ -343,11 +343,11 @@ import { UiIconComponent } from './ui-icon.component';
 
     </section>
   `,
-  styles: [\`
+  styles: [`
     @keyframes shimmer {
       100% { transform: translateX(100%); }
     }
-  \`]
+  `]
 })
 export class TeamPerformanceComponent {
   blocks = input<Block[]>([]);
